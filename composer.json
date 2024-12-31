@@ -1,0 +1,19 @@
+{
+    "name": "konnect/naya-framework",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Konnect\\NayaFramework\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kumarnabin",
+            "email": "touchnabin@gmail.com"
+        }
+    ],
+  "require": {
+    "ext-pdo": "*",
+    "ext-ctype": "*"
+  }
+}
