@@ -17,5 +17,5 @@ To use Naya Framework, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/naya-framework.git
+   git clone https://github.com/kumarnabin/naya-framework.git
    cd naya-framework
