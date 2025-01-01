@@ -23,7 +23,7 @@ class Database {
     // Establish a PDO connection
     private function connect() {
         try {
-            $dbPath = "../".$_ENV['DB_DATABASE'];
+            $dbPath = $_ENV['DB_DATABASE'];
             $this->pdo = new PDO("sqlite:$dbPath");
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
