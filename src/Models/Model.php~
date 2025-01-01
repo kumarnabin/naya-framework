@@ -15,7 +15,7 @@ abstract class Model
         $this->db = $database->getConnection();
     }
 
-    public function all(): array
+    public function getAll(): array
     {
         try {
             $stmt = $this->db->prepare("SELECT * FROM {$this->table}");

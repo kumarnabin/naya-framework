@@ -2,8 +2,14 @@
 
 namespace Konnect\NayaFramework\Models;
 
+use Konnect\NayaFramework\Database;
+use PDO;
+
 class User extends Model
 {
+    protected $table = 'users'; // Specify the database table
+
+    // Default user data for seeding or testing
     private array $defaultData = [
         [
             'id' => 1,
@@ -107,15 +113,57 @@ class User extends Model
         ]
 
     ];
-    protected $data = [];
 
-    public function __construct(array $data = [])
+    public function __construct($databases=null)
     {
-        if (empty($data)) {
-            $this->data = $this->defaultData;
-        } else {
-            $this->data = $data;
+        $database = $databases ?? new Database();
+        parent::__construct($database);
+
+        $this->schema();
+        $this->seedData();
+    }
+
+    // Seed the database with default data
+    public function seedData(): void
+    {
+        foreach ($this->defaultData as $data) {
+            $this->create($data);
         }
-        parent::__construct($this->data);
+    } public function schema(): void
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->table} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            username VARCHAR(255) NOT NULL,
+            age INTEGER NOT NULL,
+            dob DATE NOT NULL,
+            confirm_password VARCHAR(255) NOT NULL,
+            website VARCHAR(255) NOT NULL
+        )";
+        $this->db->exec($sql);
+    }
+
+    // Example: Get users by age range
+    public function getUsersByAgeRange(int $minAge, int $maxAge): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE age BETWEEN :minAge AND :maxAge");
+        $stmt->execute([
+            'minAge' => $minAge,
+            'maxAge' => $maxAge,
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Example: Authenticate user by email and password
+    public function authenticate(string $email, string $password): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE email = :email AND password = :password");
+        $stmt->execute([
+            'email' => $email,
+            'password' => $password,
+        ]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user ?: null; // Return null if authentication fails
     }
 }

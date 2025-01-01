@@ -14,6 +14,7 @@
     ],
   "require": {
     "ext-pdo": "*",
-    "ext-ctype": "*"
+    "ext-ctype": "*",
+        "vlucas/phpdotenv": "^5.6"
   }
 }
