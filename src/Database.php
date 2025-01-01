@@ -4,27 +4,40 @@ namespace Konnect\NayaFramework;
 
 use PDO;
 use PDOException;
-use Dotenv\Dotenv;
 
-class Database {
+class Database
+{
     private $pdo;
 
-    public function __construct() {
-        $this->loadEnv();
+    public function __construct()
+    {
         $this->connect();
     }
 
-    // Load environment variables
-    private function loadEnv() {
-        $dotenv = Dotenv::createImmutable(__DIR__.'/../');
-        $dotenv->load();
-    }
-
     // Establish a PDO connection
-    private function connect() {
+    private function connect(): void
+    {
         try {
-            $dbPath = "../".$_ENV['DB_DATABASE'];
-            $this->pdo = new PDO("sqlite:$dbPath");
+            $dbDriver = env('DB_DRIVER', 'sqlite'); // Default to SQLite
+            if ($dbDriver === 'sqlite') {
+                $dbPath = "../" . env('DB_DATABASE', 'database.sqlite');
+                if (!file_exists($dbPath)) {
+                    touch($dbPath);
+                }
+                $this->pdo = new PDO("sqlite:$dbPath");
+            } elseif ($dbDriver === 'mysql') {
+                $host = env('DB_HOST', '127.0.0.1');
+                $dbname = env('DB_DATABASE', 'test');
+                $username = env('DB_USERNAME', 'root');
+                $password = env('DB_PASSWORD', '');
+                $port = env('DB_PORT', 3306);
+
+                $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+                $this->pdo = new PDO($dsn, $username, $password);
+            } else {
+                throw new PDOException("Unsupported database driver: $dbDriver");
+            }
+
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
@@ -32,7 +45,8 @@ class Database {
     }
 
     // Expose the PDO instance
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->pdo;
     }
 }
