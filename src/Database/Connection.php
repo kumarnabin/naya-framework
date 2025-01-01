@@ -1,11 +1,11 @@
 <?php
 
-namespace Konnect\NayaFramework;
+namespace Konnect\NayaFramework\Database;
 
 use PDO;
 use PDOException;
 
-class Database
+class Connection
 {
     private $pdo;
 

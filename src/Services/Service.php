@@ -220,7 +220,7 @@ abstract class Service
 
             return $this->model->all($withRelations);
         } catch (PDOException $e) {
-            return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+            return ['status' => 'error', 'message' => 'Connection error: ' . $e->getMessage()];
         }
     }
 
@@ -255,7 +255,7 @@ abstract class Service
         } catch (PDOException $e) {
             return [
                 'status' => 'error',
-                'message' => 'Database error: ' . $e->getMessage(),
+                'message' => 'Connection error: ' . $e->getMessage(),
             ];
         }
     }
@@ -279,7 +279,7 @@ abstract class Service
         } catch (PDOException $e) {
             return [
                 'status' => 'error',
-                'message' => 'Database error: ' . $e->getMessage(),
+                'message' => 'Connection error: ' . $e->getMessage(),
             ];
         }
     }

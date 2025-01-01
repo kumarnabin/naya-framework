@@ -1,15 +1,11 @@
 <?php
 
-namespace Konnect\NayaFramework\Models;
+namespace Konnect\NayaFramework\Database;
 
-use Konnect\NayaFramework\Database;
-use PDO;
+use Konnect\NayaFramework\Models\User;
 
-class User extends Model
+class UserSchema
 {
-    protected $table = 'users'; // Specify the database table
-
-    // Default user data for seeding or testing
     private array $defaultData = [
         [
             'id' => 1,
@@ -113,25 +109,28 @@ class User extends Model
         ]
 
     ];
+    private mixed $connection;
+    private User $modal;
 
-    public function __construct($databases=null)
+    public function __construct($connection = null)
     {
-        $database = $databases ?? new Database();
-        parent::__construct($database);
+        $this->connection = $connection ?? new Connection();
+        $this->modal = new User();
 
-        $this->schema();
-        $this->seedData();
+//        $this->schema();
+//        $this->seedData();
     }
 
-    // Seed the database with default data
     public function seedData(): void
     {
         foreach ($this->defaultData as $data) {
-            $this->create($data);
+            $this->modal->create($data);
         }
-    } public function schema(): void
+    }
+
+    public function schema(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table} (
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->modal->getTableName()} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL,
@@ -141,29 +140,6 @@ class User extends Model
             confirm_password VARCHAR(255) NOT NULL,
             website VARCHAR(255) NOT NULL
         )";
-        $this->db->exec($sql);
-    }
-
-    // Example: Get users by age range
-    public function getUsersByAgeRange(int $minAge, int $maxAge): array
-    {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE age BETWEEN :minAge AND :maxAge");
-        $stmt->execute([
-            'minAge' => $minAge,
-            'maxAge' => $maxAge,
-        ]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Example: Authenticate user by email and password
-    public function authenticate(string $email, string $password): ?array
-    {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE email = :email AND password = :password");
-        $stmt->execute([
-            'email' => $email,
-            'password' => $password,
-        ]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $user ?: null; // Return null if authentication fails
+        $this->connection->exec($sql);
     }
 }
