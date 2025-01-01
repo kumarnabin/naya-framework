@@ -24,7 +24,7 @@ class User extends Model
     // Example: Get users by age range
     public function getUsersByAgeRange(int $minAge, int $maxAge): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE age BETWEEN :minAge AND :maxAge");
+        $stmt = $this->con->prepare("SELECT * FROM {$this->table} WHERE age BETWEEN :minAge AND :maxAge");
         $stmt->execute([
             'minAge' => $minAge,
             'maxAge' => $maxAge,
@@ -35,7 +35,7 @@ class User extends Model
     // Example: Authenticate user by email and password
     public function authenticate(string $email, string $password): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE email = :email AND password = :password");
+        $stmt = $this->con->prepare("SELECT * FROM {$this->table} WHERE email = :email AND password = :password");
         $stmt->execute([
             'email' => $email,
             'password' => $password,
