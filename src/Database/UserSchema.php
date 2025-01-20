@@ -12,9 +12,8 @@ class UserSchema
             'email' => 'john.doe@example.com',
             'password' => 'password123',
             'username' => 'johnDoe92',
-            'age' => 28,
+            'name' => 'John Doe',
             'dob' => '1996-03-15',
-            'confirm_password' => 'password123',
             'website' => 'https://johndoe.com',
         ],
         [
@@ -22,9 +21,8 @@ class UserSchema
             'email' => 'nabin.singh@example.com',
             'password' => 'mypassword987',
             'username' => 'nabinSingh91',
-            'age' => 32,
+            'name' => 'Nabin Singh',
             'dob' => '1992-07-22',
-            'confirm_password' => 'mypassword987',
             'website' => 'https://nabinsingh.com',
         ],
         [
@@ -32,9 +30,8 @@ class UserSchema
             'email' => 'alice.williams@domain.com',
             'password' => 'alice12345',
             'username' => 'aliceW',
-            'age' => 26,
+            'name' => 'Alice Williams',
             'dob' => '1998-05-11',
-            'confirm_password' => 'alice12345',
             'website' => 'https://alicewilliams.com',
         ],
         [
@@ -42,9 +39,8 @@ class UserSchema
             'email' => 'rajesh.kumar@example.com',
             'password' => 'rajesh1234',
             'username' => 'rajeshKumar',
-            'age' => 35,
+            'name' => 'Rajesh Kumar',
             'dob' => '1989-10-30',
-            'confirm_password' => 'rajesh1234',
             'website' => 'https://rajeshkumar.com',
         ],
         [
@@ -52,9 +48,8 @@ class UserSchema
             'email' => 'sara_thompson99@example.com',
             'password' => 'sara4567',
             'username' => 'saraT99',
-            'age' => 27,
+            'name' => 'Sara Thompson',
             'dob' => '1997-12-05',
-            'confirm_password' => 'sara4567',
             'website' => 'https://sarathompson.com',
         ],
         [
@@ -62,9 +57,8 @@ class UserSchema
             'email' => 'james.anderson@company.org',
             'password' => 'james2024',
             'username' => 'jamesAnderson',
-            'age' => 40,
+            'name' => 'James Anderson',
             'dob' => '1984-04-10',
-            'confirm_password' => 'james2024',
             'website' => 'https://jamesanderson.com',
         ],
         [
@@ -72,9 +66,8 @@ class UserSchema
             'email' => 'pooja.sharma@domain.net',
             'password' => 'pooja2023',
             'username' => 'poojaSharma',
-            'age' => 30,
+            'name' => 'Pooja Sharma',
             'dob' => '1994-08-15',
-            'confirm_password' => 'pooja2023',
             'website' => 'https://poojasharma.com',
         ],
         [
@@ -82,9 +75,8 @@ class UserSchema
             'email' => 'ravi.patel123@outlook.com',
             'password' => 'ravi12345',
             'username' => 'raviP123',
-            'age' => 29,
+            'name' => 'Ravi Patel',
             'dob' => '1995-11-20',
-            'confirm_password' => 'ravi12345',
             'website' => 'https://ravipatel.com',
         ],
         [
@@ -92,9 +84,8 @@ class UserSchema
             'email' => 'maria.garcia@example.com',
             'password' => 'maria2022',
             'username' => 'mariaG22',
-            'age' => 26,
+            'name' => 'Maria Garcia',
             'dob' => '1998-02-10',
-            'confirm_password' => 'maria2022',
             'website' => 'https://mariagarcia.com',
         ],
         [
@@ -102,41 +93,78 @@ class UserSchema
             'email' => 'david_lee@sample.com',
             'password' => 'david12345',
             'username' => 'davidLee90',
-            'age' => 34,
+            'name' => 'David Lee',
             'dob' => '1990-09-25',
-            'confirm_password' => 'david12345',
             'website' => 'https://davidlee.com',
-        ]
-
+        ],
     ];
-    private mixed $connection;
-    private User $modal;
 
-    public function __construct($connection = null)
+    private User $modal;
+    private Connection $connection;
+    private User $model;
+
+    public function __construct(?Connection $connection = null)
     {
         $this->connection = $connection ?? new Connection();
-        $this->modal = new User();
+        $this->model = new User();
     }
 
     public function seedData(): void
     {
         foreach ($this->defaultData as $data) {
-            $this->modal->create($data);
+            // Hash the password before saving
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+            $this->model->create($data);
         }
     }
 
     public function schema(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->modal->getTableName()} (
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->model->getTableName()} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
-            username VARCHAR(255) NOT NULL,
-            age INTEGER NOT NULL,
+            username VARCHAR(255) NOT NULL UNIQUE,
+            name VARCHAR(255) NOT NULL,
             dob DATE NOT NULL,
-            confirm_password VARCHAR(255) NOT NULL,
             website VARCHAR(255) NOT NULL
         )";
-        $this->connection->exec($sql);
+
+        $this->connection->getConnection()->exec($sql);
+    }
+
+    public function dropSchema(): void
+    {
+        $sql = "DROP TABLE IF EXISTS {$this->model->getTableName()}";
+        $this->connection->getConnection()->exec($sql);
+    }
+
+    public function truncate(): void
+    {
+        $sql = "DELETE FROM {$this->model->getTableName()}";
+        $this->connection->getConnection()->exec($sql);
+    }
+
+    public function reset(): void
+    {
+        $this->dropSchema();
+        $this->schema();
+        $this->seedData();
+    }
+
+    public function refresh(): void
+    {
+        $this->truncate();
+        $this->seedData();
+    }
+
+    public function migrate(): void
+    {
+        $this->schema();
+    }
+
+    public function rollback(): void
+    {
+        $this->dropSchema();
     }
 }

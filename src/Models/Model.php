@@ -7,17 +7,18 @@ use PDO;
 
 abstract class Model
 {
-    protected $con;
-    protected $table;
+    protected PDO $con;
+    protected string $table;
     protected array $fillable = [];
     protected array $relations = [];
 
-    public function __construct(Connection $connection)
+    public function __construct()
     {
+        $connection = new Connection();
         $this->con = $connection->getConnection();
     }
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->table;
     }

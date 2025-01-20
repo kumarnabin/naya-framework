@@ -7,16 +7,7 @@ use PDO;
 
 class User extends Model
 {
-    protected $table = 'users'; // Specify the connection table
-
-    // Default user data for seeding or testing
-
-
-    public function __construct($connection=null)
-    {
-        $connection = $connection ?? new Connection();
-        parent::__construct($connection);
-    }
+    protected string $table = 'users'; // Specify the connection table
 
     // Seed the connection with default data
 
