@@ -16,19 +16,14 @@ class IndexController
             'users' => (new User)->all()
         ]);
     }
-
-    public function routeCache(): void
-    {
+    public function routeCache(): void{
         Route::clearCache();
         echo "Routes cache cleared!";
 
     }
-
-    public function routeRefresh(): void
-    {
+    public function routeRefresh(): void{
         Route::clearCache();
         echo "Routes cache cleared!";
-
 
     }
 }
