@@ -1,24 +1,33 @@
 <?php
+
 namespace Konnect\NayaFramework\Lib;
 
-class View {
-    protected static string $viewPath ='views';
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
+class View
+{
+    protected static string $viewPath = 'views';
 
-    // Render the PHP template view
+    protected static Environment $twig;
+
+    // Initialize Twig Environment
+    public static function init(): void
+    {
+        $loader = new FilesystemLoader('../' . self::$viewPath);
+        self::$twig = new Environment($loader, [
+            'cache' => false, // Set to 'cache' folder for production
+        ]);
+    }
+
+    // Render the Twig template view
     public static function render($viewName, $data = []): void
     {
-        // Extract the data array into variables
-        extract($data);
-
-        // Check if the view file exists
-        $viewFile = "../". self::$viewPath . '/' . $viewName . '.php';
-        if (file_exists($viewFile)) {
-            // Include the view file and render it
-            include $viewFile;
-        } else {
-            // If the view file doesn't exist, show an error
-            echo "View '$viewName' not found.";
+        try {
+            echo self::$twig->render($viewName . '.twig', $data);
+        } catch (\Twig\Error\LoaderError|\Twig\Error\RuntimeError|\Twig\Error\SyntaxError $e) {
+            echo "Error rendering view: " . $e->getMessage();
         }
     }
 }
+

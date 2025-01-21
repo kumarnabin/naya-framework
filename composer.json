@@ -16,6 +16,7 @@
     "ext-pdo": "*",
     "ext-ctype": "*",
     "vlucas/phpdotenv": "^5.6",
-    "ext-fileinfo": "*"
+    "ext-fileinfo": "*",
+    "twig/twig": "^3.18"
   }
 }

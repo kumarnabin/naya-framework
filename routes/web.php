@@ -1,18 +1,11 @@
 <?php
 
+use Konnect\NayaFramework\Controllers\IndexController;
 use Konnect\NayaFramework\Controllers\UserController;
 use Konnect\NayaFramework\Lib\Route;
-use Konnect\NayaFramework\Lib\View;
-use Konnect\NayaFramework\Models\User;
 
 // Define routes
-Route::get('/', function () {
-    View::render('index', [
-        'name' => 'John Doe',
-        'message' => 'Hello, World!',
-        'users' => (new User)->all()
-    ]);
-});
+Route::get('/', [IndexController::class, 'index']);
 // Define routes
 Route::get('/cc', function () {
     try {
