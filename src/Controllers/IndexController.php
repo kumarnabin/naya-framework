@@ -9,8 +9,6 @@ class IndexController
 {
     public function index(): void
     {
-        View::init();
-
         View::render('index', [
             'name' => 'John Doe',
             'message' => 'Hello, World!',

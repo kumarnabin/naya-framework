@@ -23,6 +23,7 @@ class View
     // Render the Twig template view
     public static function render($viewName, $data = []): void
     {
+        self::init();
         try {
             echo self::$twig->render($viewName . '.twig', $data);
         } catch (\Twig\Error\LoaderError|\Twig\Error\RuntimeError|\Twig\Error\SyntaxError $e) {
